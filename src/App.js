@@ -17,13 +17,13 @@ function App() {
   const [positions, setPosition] = useState([
     [1, 2, 3],
     [4, 5, 6],
-    [7, "", 8],
+    [7, 8, 9],
   ]);
   const [choosed, setChoosed] = useState(0);
   const [obj, setObj] = useState([
-    ["", "", ""],
-    ["", "", ""],
-    ["", "", ""],
+    [1, 2, 3],
+    [4, 5, 6],
+    [7, 8, 9],
   ]);
 
   function Move(line, col) {
@@ -62,12 +62,14 @@ function App() {
   function setFieldObj(line, col, setter, posiblity) {
     let newPositiions = [...posiblity];
     let isValid = validateSeted(newPositiions);
+    console.log("choosed || ", choosed)
     if (isValid) {
-      newPositiions[line][col] = String(choosed);
+      newPositiions[line][col] = choosed;
       setChoosed(0);
       setter(newPositiions);
     } else {
-      if (newPositiions[line][col] == String(choosed)) {
+      console.log("Position line and Col || ", newPositiions[line][col])
+      if (newPositiions[line][col] == choosed) {
         newPositiions[line][col] = "";
         setChoosed(0);
         setter(newPositiions);
@@ -124,20 +126,37 @@ function App() {
                 <td
                   onClick={() => setFieldObj(lin, col, setPosition, positions)}
                 >
-                  {position}
+                  {position === 1 ? <img src={img1} /> : null}
+                  {position === 2 ? <img src={img2} /> : null}
+                  {position === 3 ? <img src={img3} /> : null}
+                  {position === 4 ? <img src={img4} /> : null}
+                  {position === 5 ? <img src={img5} /> : null}
+                  {position === 6 ? <img src={img6} /> : null}
+                  {position === 7 ? <img src={img7} /> : null}
+                  {position === 8 ? <img src={img8} /> : null}
+                  {position === 9 ? <img src={img9} /> : null}
+                  
                 </td>
               ))}
             </tr>
           ))}
         </table>
 
-        <table style={{ position: "absolute", left: "90vh" }}>
+        <table style={{ left: "90vh" }}>
           Final
           {obj.map((item, lin) => (
             <tr>
               {item.map((position, col) => (
                 <td onClick={() => setFieldObj(lin, col, setObj, obj)}>
-                  {position}
+                  {position === 1 ? <img src={img1} /> : null}
+                  {position === 2 ? <img src={img2} /> : null}
+                  {position === 3 ? <img src={img3} /> : null}
+                  {position === 4 ? <img src={img4} /> : null}
+                  {position === 5 ? <img src={img5} /> : null}
+                  {position === 6 ? <img src={img6} /> : null}
+                  {position === 7 ? <img src={img7} /> : null}
+                  {position === 8 ? <img src={img8} /> : null}
+                  {position === 9 ? <img src={img9} /> : null}
                 </td>
               ))}
             </tr>
