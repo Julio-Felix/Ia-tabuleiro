@@ -87,7 +87,9 @@ function App() {
         data.estadoObjetivo.push(String(value));
       });
     });
-
+    setAbertos([]);
+    setFechados([]);
+    setAtual([]);
     console.log("DATA || ", data);
     axios
       .post("http://localhost:8998/busca", data)
