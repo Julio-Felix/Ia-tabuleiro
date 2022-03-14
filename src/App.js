@@ -20,7 +20,7 @@ function App() {
     ["-", "-", "-"],
     ["-", "-", "-"],
   ]);
-  const [choosed, setChoosed] = useState(0);
+  const [choosed, setChoosed] = useState("-");
   const [obj, setObj] = useState([
     ["-", "-", "-"],
     ["-", "-", "-"],
@@ -37,13 +37,13 @@ function App() {
     console.log("choosed || ", choosed);
     if (isValid) {
       newPositiions[line][col] = choosed;
-      setChoosed(0);
+      setChoosed("-");
       setter(newPositiions);
     } else {
       console.log("Position line and Col || ", newPositiions[line][col]);
       if (newPositiions[line][col] == choosed) {
         newPositiions[line][col] = "-";
-        setChoosed(0);
+        setChoosed("-");
         setter(newPositiions);
       }
       console.log("Choosed nao Vallido para ser setado nesse Tabuleiro.");
@@ -71,25 +71,56 @@ function App() {
     return valid;
   }
 
+  function checkIfNull(tabuleiro) {
+    let isNull = false
+    let count = 0
+    tabuleiro.forEach((item) => {
+      item.forEach((value) => {
+        if (value === "-") {
+          count++
+          if(count >= 2) isNull=true
+        }
+      })
+    })
+    return isNull
+  }
+
+  function automaticTest() {
+    setPosition([
+      ["1", "2", "3"],
+      ["5", "6", "-"],
+      ["4", "7", "8"],
+    ])
+    setObj([
+      ["1", "2", "3"],
+      ["5", "7", "-"],
+      ["4", "8", "6"],
+    ]) 
+  }
+
   function submitForm() {
     let data = {
       estadoInicial: [],
       estadoObjetivo: [],
     };
+    if (checkIfNull(positions) || checkIfNull(obj)) {
+      alert("Inicial ou Final Invalido.")
+      return;
+    }
     positions.forEach((item) => {
       item.forEach((value) => {
         data.estadoInicial.push(String(value));
       });
     });
-
+    
     obj.forEach((item) => {
       item.forEach((value) => {
         data.estadoObjetivo.push(String(value));
       });
     });
-    setAbertos([]);
-    setFechados([]);
-    setAtual([]);
+    setAbertos([])
+    setFechados([])
+    setAtual([])
     console.log("DATA || ", data);
     axios
       .post("http://localhost:8998/busca", data)
@@ -129,7 +160,7 @@ function App() {
           <tr>
             <td></td>
             <td>
-              <p style={{ fontSize: 24, textAlign: "center" }}>Inicial</p>
+              <p style={{ fontSize: 24, textAlign: "center", fontWeight: 'bold' }}>Inicial</p>
             </td>
           </tr>
           {positions.map((item, lin) => (
@@ -154,11 +185,11 @@ function App() {
           ))}
         </table>
 
-        <table style={{ left: "90vh" }}>
+        <table style={{top: "50vh", left: "40vh" }}>
           <tr>
             <td></td>
             <td>
-              <p style={{ fontSize: 24, textAlign: "center" }}>Final</p>
+              <p style={{ fontSize: 24, textAlign: "center", fontWeight: 'bold' }}>Final</p>
             </td>
           </tr>
 
@@ -184,10 +215,10 @@ function App() {
           ))}
         </table>
 
-        <table style={{}}>
+        <table style={{marginLeft:20}}>
           <tr>
             <td>
-              <p style={{ fontSize: 24, textAlign: "center" }}>Escolha</p>
+              <p style={{ fontSize: 24, textAlign: "center", fontWeight: 'bold' }}>Escolha</p>
             </td>
           </tr>
 
@@ -258,7 +289,7 @@ function App() {
           </tr>
         </table>
 
-        <table style={{ top: "65vh", left: "30vw" }}>
+        <table style={{ left: "55vw" }}>
           <tr>
             <th>Abertos</th>
             <th>Fechados</th>
@@ -266,25 +297,26 @@ function App() {
           </tr>
           {abertos.map((item, index) => {
             return (
-              <tr>
-                <th>{abertos[index]}</th>
-                <th>{fechados[index]}</th>
-                <th>{atual[index]}</th>
+              <tr >
+                <th style={{width: 120,height: 20}}>{abertos[index]}</th>
+                <th style={{width: 120,height: 20}}>{fechados[index]}</th>
+                <th style={{width: 120,height: 20}}>{atual[index]}</th>
               </tr>
             );
           })}
         </table>
-        <Button style={{ position: "absolute", top: "60vh", left: "36vw"  }} onClick={submitForm} >Iniciar</Button>
-        <Button style={{ position: "absolute", top: "60vh", left: "45vw"  }} onClick={() => setPosition([
+        <Button style={{ position: "absolute", top: "15vh", left: "45vw"  }} onClick={submitForm} >Iniciar</Button>
+        <Button style={{ position: "absolute", top: "25vh", left: "45vw"  }} onClick={() => setPosition([
             ["-", "-", "-"],
             ["-", "-", "-"],
             ["-", "-", "-"],
           ]) } >Limpar Inicial</Button>
-        <Button style={{ position: "absolute", top: "60vh", left: "60vw"  }} onClick={() => setObj([
+        <Button style={{ position: "absolute", top: "35vh", left: "45vw"  }} onClick={() => setObj([
           ["-", "-", "-"],
           ["-", "-", "-"],
           ["-", "-", "-"],
         ]) } >Limpar Final</Button>
+        <Button style={{ position: "absolute", top: "45vh", left: "45vw"  }} onClick={() => automaticTest() } >Auto-Teste</Button>
 
           
       </body>
