@@ -7,7 +7,7 @@ import img6 from "./assets/img6.jpg";
 import img7 from "./assets/img7.jpg";
 import img8 from "./assets/img8.jpg";
 import img9 from "./assets/img9.jpg";
-import 'bootstrap/dist/css/bootstrap.min.css';
+import "bootstrap/dist/css/bootstrap.min.css";
 
 import "./App.css";
 import { Button } from "react-bootstrap";
@@ -31,17 +31,16 @@ function App() {
   const [fechados, setFechados] = useState([]);
   const [atual, setAtual] = useState([]);
 
-
   function setFieldObj(line, col, setter, posiblity) {
     let newPositiions = [...posiblity];
     let isValid = validateSeted(newPositiions);
-    console.log("choosed || ", choosed)
+    console.log("choosed || ", choosed);
     if (isValid) {
       newPositiions[line][col] = choosed;
       setChoosed(0);
       setter(newPositiions);
     } else {
-      console.log("Position line and Col || ", newPositiions[line][col])
+      console.log("Position line and Col || ", newPositiions[line][col]);
       if (newPositiions[line][col] == choosed) {
         newPositiions[line][col] = "-";
         setChoosed(0);
@@ -74,99 +73,103 @@ function App() {
 
   function submitForm() {
     let data = {
-      "estadoInicial": [
-      ],
-      "estadoObjetivo": [
-      ]
-    }
+      estadoInicial: [],
+      estadoObjetivo: [],
+    };
     positions.forEach((item) => {
       item.forEach((value) => {
         data.estadoInicial.push(String(value));
-      })
-    })
+      });
+    });
 
     obj.forEach((item) => {
       item.forEach((value) => {
         data.estadoObjetivo.push(String(value));
-      })
-      
-    })
+      });
+    });
 
-    console.log("DATA || ", data)
-    axios.post('/busca',data)
+    console.log("DATA || ", data);
+    axios
+      .post("http://localhost:8998/busca", data)
       .then(function (response) {
         // handle success
 
-        let responseData = {
-          "estados": [
-            {
-              "abertos": "4|3|9|8",
-              "fechados": "1|2|6",
-              "x": "8",
-              "estadoImportante": true,
-              "estados": "1|2|3|7|-|6|8|5|9"
-            },
-            {
-              "abertos": "4|3|9|8",
-              "fechados": "1|2|6",
-              "x": "8",
-              "estadoImportante": true,
-              "estados": "1|2|3|7|6|-|8|5|9"
-            },
-            {
-              "abertos": "4|3|9|8",
-              "fechados": "1|2|6",
-              "x": "8",
-              "estadoImportante": true,
-              "estados": "1|2|3|7|6|8|-|5|9"
-            },
-            {
-              "abertos": "4|3|9|8",
-              "fechados": "1|2|6",
-              "x": "8",
-              "estadoImportante": true,
-              "estados": "1|2|3|7|-|6|8|5|9"
-            }
-          ],
-          "ordem": [
-            "1|2|3|-|5|6|7|8|9",
-            "1|2|3|7|5|6|-|8|9",
-            "1|2|3|7|5|6|8|-|9",
-            "1|2|3|7|-|6|8|5|9"
-          ]
-        }
+        let responseData = response.data;
+
+        // {
+        //   estados: [
+        //     {
+        //       abertos: "4|3|9|8",
+        //       fechados: "1|2|6",
+        //       x: "8",
+        //       estadoImportante: true,
+        //       estados: "1|2|3|7|-|6|8|5|9",
+        //     },
+        //     {
+        //       abertos: "4|3|9|8",
+        //       fechados: "1|2|6",
+        //       x: "8",
+        //       estadoImportante: true,
+        //       estados: "1|2|3|7|6|-|8|5|9",
+        //     },
+        //     {
+        //       abertos: "4|3|9|8",
+        //       fechados: "1|2|6",
+        //       x: "8",
+        //       estadoImportante: true,
+        //       estados: "1|2|3|7|6|8|-|5|9",
+        //     },
+        //     {
+        //       abertos: "4|3|9|8",
+        //       fechados: "1|2|6",
+        //       x: "8",
+        //       estadoImportante: true,
+        //       estados: "1|2|3|7|-|6|8|5|9",
+        //     },
+        //   ],
+        //   ordem: [
+        //     "1|2|3|-|5|6|7|8|9",
+        //     "1|2|3|7|5|6|-|8|9",
+        //     "1|2|3|7|5|6|8|-|9",
+        //     "1|2|3|7|-|6|8|5|9",
+        //   ],
+        // };
         let reverseData = responseData.estados.reverse();
-        recursiveEstados(reverseData,abertos,fechados,atual,0)
+        recursiveEstados(reverseData, abertos, fechados, atual, 0);
       })
       .catch(function (error) {
-        alert("E necessario que um campo da Tabela Fique Vazio.")
+        alert(error.response.data.mensagem);
         console.log(error);
-      })
-      // .then(function () {
-      //   // always executed
-      // });
+      });
+    // .then(function () {
+    //   // always executed
+    // });
   }
 
-  function recursiveEstados(est, arrayAbertos,arrayFechados,atuais, i) {
-    arrayAbertos = [...arrayAbertos, est[i].abertos]
+  function recursiveEstados(est, arrayAbertos, arrayFechados, atuais, i) {
+    arrayAbertos = [...arrayAbertos, est[i].abertos];
     setAbertos(arrayAbertos);
-    arrayFechados = [...arrayFechados, est[i].fechados]
+    arrayFechados = [...arrayFechados, est[i].fechados];
     setFechados(arrayFechados);
-    atuais = [...atuais, est[i].x]
+    atuais = [...atuais, est[i].x];
     setAtual(atuais);
-    setPosition(transformTabuleiro(est[i].estados))
+    setPosition(transformTabuleiro(est[i].estados));
 
     setTimeout(() => {
-      recursiveEstados(est, arrayAbertos,arrayFechados,atuais, i+1)
-    },1500)
+      recursiveEstados(est, arrayAbertos, arrayFechados, atuais, i + 1);
+    }, 1500);
   }
 
   return (
     <div className="App">
       <body>
-
         <table style={{ left: "40vh" }}>
-        <tr><td></td><td><p style={{fontSize:24,textAlign:'center'}}>Inicial</p></td></tr>
+          <tr>
+            <td></td>
+            <td>
+              <p style={{ fontSize: 24, textAlign: "center" }}>Inicial</p>
+            </td>
+          </tr>
           {positions.map((item, lin) => (
             <tr>
               {item.map((position, col) => (
@@ -183,7 +186,6 @@ function App() {
                   {position == 7 || position == "7" ? <img src={img7} /> : null}
                   {position == 8 || position == "8" ? <img src={img8} /> : null}
                   {position == 9 || position == "9" ? <img src={img9} /> : null}
-                  
                 </td>
               ))}
             </tr>
@@ -191,12 +193,20 @@ function App() {
         </table>
 
         <table style={{ left: "90vh" }}>
-        <tr><td></td><td><p style={{fontSize:24,textAlign:'center'}}>Final</p></td></tr>
-          
+          <tr>
+            <td></td>
+            <td>
+              <p style={{ fontSize: 24, textAlign: "center" }}>Final</p>
+            </td>
+          </tr>
+
           {obj.map((item, lin) => (
             <tr>
               {item.map((position, col) => (
-                <td style={{ borderWidth:2 }} onClick={() => setFieldObj(lin, col, setObj, obj)}>
+                <td
+                  style={{ borderWidth: 2 }}
+                  onClick={() => setFieldObj(lin, col, setObj, obj)}
+                >
                   {position == 1 || position == "1" ? <img src={img1} /> : null}
                   {position == 2 || position == "2" ? <img src={img2} /> : null}
                   {position == 3 || position == "3" ? <img src={img3} /> : null}
@@ -211,19 +221,23 @@ function App() {
             </tr>
           ))}
         </table>
-        
+
         <table style={{}}>
-        <tr><td><p style={{fontSize:24,textAlign:'center'}}>Escolha</p></td></tr>
-          
+          <tr>
+            <td>
+              <p style={{ fontSize: 24, textAlign: "center" }}>Escolha</p>
+            </td>
+          </tr>
+
           <tr>
             <th
-              style={choosed === 1 ? { borderWidth:2 } : {}}
+              style={choosed === 1 ? { borderWidth: 2 } : {}}
               onClick={() => setChoosed(1)}
             >
               <img src={img1} />
             </th>
             <th
-              style={choosed === 5 ? { borderWidth:2 } : {}}
+              style={choosed === 5 ? { borderWidth: 2 } : {}}
               onClick={() => setChoosed(5)}
             >
               <img src={img5} />
@@ -231,13 +245,13 @@ function App() {
           </tr>
           <tr>
             <th
-              style={choosed === 2 ? { borderWidth:2 } : {}}
+              style={choosed === 2 ? { borderWidth: 2 } : {}}
               onClick={() => setChoosed(2)}
             >
               <img src={img2} />
             </th>
             <th
-              style={choosed === 6 ? { borderWidth:2 } : {}}
+              style={choosed === 6 ? { borderWidth: 2 } : {}}
               onClick={() => setChoosed(6)}
             >
               <img src={img6} />
@@ -245,13 +259,13 @@ function App() {
           </tr>
           <tr>
             <th
-              style={choosed === 3 ? { borderWidth:2 } : {}}
+              style={choosed === 3 ? { borderWidth: 2 } : {}}
               onClick={() => setChoosed(3)}
             >
               <img src={img3} />
             </th>
             <th
-              style={choosed === 7 ? { borderWidth:2 } : {}}
+              style={choosed === 7 ? { borderWidth: 2 } : {}}
               onClick={() => setChoosed(7)}
             >
               <img src={img7} />
@@ -259,13 +273,13 @@ function App() {
           </tr>
           <tr>
             <th
-              style={choosed === 4 ? { borderWidth:2 } : {}}
+              style={choosed === 4 ? { borderWidth: 2 } : {}}
               onClick={() => setChoosed(4)}
             >
               <img src={img4} />
             </th>
             <th
-              style={choosed === 8 ? { borderWidth:2 } : {}}
+              style={choosed === 8 ? { borderWidth: 2 } : {}}
               onClick={() => setChoosed(8)}
             >
               <img src={img8} />
@@ -273,7 +287,7 @@ function App() {
           </tr>
           <tr>
             <th
-              style={choosed === 9 ? { borderWidth:2 } : {}}
+              style={choosed === 9 ? { borderWidth: 2 } : {}}
               onClick={() => setChoosed(9)}
             >
               <img src={img9} />
@@ -294,10 +308,15 @@ function App() {
                 <th>{fechados[index]}</th>
                 <th>{atual[index]}</th>
               </tr>
-            )
+            );
           })}
         </table>
-        <Button style={{ position: "absolute", top: "60vh", left: "36vw"  }} onClick={submitForm} >Iniciar</Button>
+        <Button
+          style={{ position: "absolute", top: "60vh", left: "36vw" }}
+          onClick={submitForm}
+        >
+          Iniciar
+        </Button>
       </body>
     </div>
   );
