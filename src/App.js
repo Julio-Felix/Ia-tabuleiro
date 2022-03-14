@@ -96,45 +96,7 @@ function App() {
     axios.post('/busca',data)
       .then(function (response) {
         // handle success
-
-        let responseData = {
-          "estados": [
-            {
-              "abertos": "4|3|9|8",
-              "fechados": "1|2|6",
-              "x": "8",
-              "estadoImportante": true,
-              "estados": "1|2|3|7|-|6|8|5|9"
-            },
-            {
-              "abertos": "4|3|9|8",
-              "fechados": "1|2|6",
-              "x": "8",
-              "estadoImportante": true,
-              "estados": "1|2|3|7|6|-|8|5|9"
-            },
-            {
-              "abertos": "4|3|9|8",
-              "fechados": "1|2|6",
-              "x": "8",
-              "estadoImportante": true,
-              "estados": "1|2|3|7|6|8|-|5|9"
-            },
-            {
-              "abertos": "4|3|9|8",
-              "fechados": "1|2|6",
-              "x": "8",
-              "estadoImportante": true,
-              "estados": "1|2|3|7|-|6|8|5|9"
-            }
-          ],
-          "ordem": [
-            "1|2|3|-|5|6|7|8|9",
-            "1|2|3|7|5|6|-|8|9",
-            "1|2|3|7|5|6|8|-|9",
-            "1|2|3|7|-|6|8|5|9"
-          ]
-        }
+        let responseData = response.data;
         let reverseData = responseData.estados.reverse();
         recursiveEstados(reverseData,abertos,fechados,atual,0)
       })
@@ -154,7 +116,7 @@ function App() {
     setFechados(arrayFechados);
     atuais = [...atuais, est[i].x]
     setAtual(atuais);
-    setPosition(transformTabuleiro(est[i].estados))
+    if(est[i].estadoImportante)setPosition(transformTabuleiro(est[i].estados))
 
     setTimeout(() => {
       recursiveEstados(est, arrayAbertos,arrayFechados,atuais, i+1)
@@ -272,6 +234,7 @@ function App() {
             </th>
           </tr>
           <tr>
+            <th></th>
             <th
               style={choosed === 9 ? { borderWidth:2 } : {}}
               onClick={() => setChoosed(9)}
@@ -298,6 +261,18 @@ function App() {
           })}
         </table>
         <Button style={{ position: "absolute", top: "60vh", left: "36vw"  }} onClick={submitForm} >Iniciar</Button>
+        <Button style={{ position: "absolute", top: "60vh", left: "46vw"  }} onClick={() => setPosition([
+            ["-", "-", "-"],
+            ["-", "-", "-"],
+            ["-", "-", "-"],
+          ]) } >Limpar Inicial</Button>
+        <Button style={{ position: "absolute", top: "60vh", left: "56vw"  }} onClick={() => setObj([
+          ["-", "-", "-"],
+          ["-", "-", "-"],
+          ["-", "-", "-"],
+        ]) } >Limpar Final</Button>
+
+          
       </body>
     </div>
   );
