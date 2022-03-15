@@ -72,17 +72,17 @@ function App() {
   }
 
   function checkIfNull(tabuleiro) {
-    let isNull = false
-    let count = 0
+    let isNull = false;
+    let count = 0;
     tabuleiro.forEach((item) => {
       item.forEach((value) => {
         if (value === "-") {
-          count++
-          if(count >= 2) isNull=true
+          count++;
+          if (count == 9) isNull = true;
         }
-      })
-    })
-    return isNull
+      });
+    });
+    return isNull;
   }
 
   function automaticTest() {
@@ -90,12 +90,38 @@ function App() {
       ["1", "2", "3"],
       ["5", "6", "-"],
       ["4", "7", "8"],
-    ])
+    ]);
     setObj([
       ["1", "2", "3"],
       ["5", "7", "-"],
       ["4", "8", "6"],
-    ]) 
+    ]);
+  }
+
+  function automaticTest2() {
+    setPosition([
+      ["1", "2", "3"],
+      ["5", "6", "-"],
+      ["4", "7", "8"],
+    ]);
+    setObj([
+      ["1", "2", "3"],
+      ["5", "6", "8"],
+      ["4", "-", "7"],
+    ]);
+  }
+
+  function automaticTestMEDO() {
+    setPosition([
+      ["1", "2", "3"],
+      ["5", "6", "-"],
+      ["4", "7", "8"],
+    ]);
+    setObj([
+      ["2", "3", "-"],
+      ["1", "6", "8"],
+      ["5", "4", "7"],
+    ]);
   }
 
   function submitForm() {
@@ -103,8 +129,8 @@ function App() {
       estadoInicial: [],
       estadoObjetivo: [],
     };
-    if (checkIfNull(positions) || checkIfNull(obj)) {
-      alert("Inicial ou Final Invalido.")
+    if (checkIfNull(obj)) {
+      alert("Estado Objetivo está vazio.");
       return;
     }
     positions.forEach((item) => {
@@ -112,23 +138,26 @@ function App() {
         data.estadoInicial.push(String(value));
       });
     });
-    
+
     obj.forEach((item) => {
       item.forEach((value) => {
         data.estadoObjetivo.push(String(value));
       });
     });
-    setAbertos([])
-    setFechados([])
-    setAtual([])
+    setAbertos([]);
+    setFechados([]);
+    setAtual([]);
     console.log("DATA || ", data);
     axios
       .post("http://localhost:8998/busca", data)
       .then(function (response) {
         // handle success
+        alert("SUCESSO");
         let responseData = response.data;
         let reverseData = responseData.estados;
-        recursiveEstados(reverseData, abertos, fechados, atual, 0);
+        recursiveEstados(reverseData, [], [], "", 0);
+        recursiveEstados(reverseData, abertos, fechados, atual, 50);
+        // pq i só funciona com 50, não sei????
       })
       .catch(function (error) {
         alert(error.response.data.mensagem);
@@ -146,11 +175,12 @@ function App() {
     setFechados(arrayFechados);
     atuais = [...atuais, est[i].x];
     setAtual(atuais);
-    if(est[i].estadoImportante)setPosition(transformTabuleiro(est[i].estados))
+    if (est[i].estadoImportante)
+      setPosition(transformTabuleiro(est[i].estados));
 
     setTimeout(() => {
       recursiveEstados(est, arrayAbertos, arrayFechados, atuais, i + 1);
-    }, 1500);
+    }, 1000);
   }
 
   return (
@@ -160,7 +190,15 @@ function App() {
           <tr>
             <td></td>
             <td>
-              <p style={{ fontSize: 24, textAlign: "center", fontWeight: 'bold' }}>Inicial</p>
+              <p
+                style={{
+                  fontSize: 24,
+                  textAlign: "center",
+                  fontWeight: "bold",
+                }}
+              >
+                Estado Jogo:
+              </p>
             </td>
           </tr>
           {positions.map((item, lin) => (
@@ -185,11 +223,19 @@ function App() {
           ))}
         </table>
 
-        <table style={{top: "50vh", left: "40vh" }}>
+        <table style={{ top: "50vh", left: "40vh" }}>
           <tr>
             <td></td>
             <td>
-              <p style={{ fontSize: 24, textAlign: "center", fontWeight: 'bold' }}>Final</p>
+              <p
+                style={{
+                  fontSize: 24,
+                  textAlign: "center",
+                  fontWeight: "bold",
+                }}
+              >
+                Estado Objetivo:
+              </p>
             </td>
           </tr>
 
@@ -215,10 +261,18 @@ function App() {
           ))}
         </table>
 
-        <table style={{marginLeft:20}}>
+        <table style={{ marginLeft: 20 }}>
           <tr>
             <td>
-              <p style={{ fontSize: 24, textAlign: "center", fontWeight: 'bold' }}>Escolha</p>
+              <p
+                style={{
+                  fontSize: 24,
+                  textAlign: "center",
+                  fontWeight: "bold",
+                }}
+              >
+                Escolha Partes:
+              </p>
             </td>
           </tr>
 
@@ -297,28 +351,62 @@ function App() {
           </tr>
           {abertos.map((item, index) => {
             return (
-              <tr >
-                <th style={{width: 120,height: 20}}>{abertos[index]}</th>
-                <th style={{width: 120,height: 20}}>{fechados[index]}</th>
-                <th style={{width: 120,height: 20}}>{atual[index]}</th>
+              <tr>
+                <th style={{ width: 120, height: 20 }}>{abertos[index]}</th>
+                <th style={{ width: 120, height: 20 }}>{fechados[index]}</th>
+                <th style={{ width: 120, height: 20 }}>{atual[index]}</th>
               </tr>
             );
           })}
         </table>
-        <Button style={{ position: "absolute", top: "15vh", left: "45vw"  }} onClick={submitForm} >Iniciar</Button>
-        <Button style={{ position: "absolute", top: "25vh", left: "45vw"  }} onClick={() => setPosition([
-            ["-", "-", "-"],
-            ["-", "-", "-"],
-            ["-", "-", "-"],
-          ]) } >Limpar Inicial</Button>
-        <Button style={{ position: "absolute", top: "35vh", left: "45vw"  }} onClick={() => setObj([
-          ["-", "-", "-"],
-          ["-", "-", "-"],
-          ["-", "-", "-"],
-        ]) } >Limpar Final</Button>
-        <Button style={{ position: "absolute", top: "45vh", left: "45vw"  }} onClick={() => automaticTest() } >Auto-Teste</Button>
-
-          
+        <Button
+          style={{ position: "absolute", top: "15vh", left: "45vw" }}
+          onClick={submitForm}
+        >
+          Iniciar
+        </Button>
+        <Button
+          style={{ position: "absolute", top: "25vh", left: "45vw" }}
+          onClick={() =>
+            setPosition([
+              ["-", "-", "-"],
+              ["-", "-", "-"],
+              ["-", "-", "-"],
+            ])
+          }
+        >
+          Limpar Est. Jogo
+        </Button>
+        <Button
+          style={{ position: "absolute", top: "35vh", left: "45vw" }}
+          onClick={() =>
+            setObj([
+              ["-", "-", "-"],
+              ["-", "-", "-"],
+              ["-", "-", "-"],
+            ])
+          }
+        >
+          Limpar Est. Objetivo
+        </Button>
+        <Button
+          style={{ position: "absolute", top: "45vh", left: "45vw" }}
+          onClick={() => automaticTest()}
+        >
+          Auto-Teste Lento
+        </Button>
+        <Button
+          style={{ position: "absolute", top: "55vh", left: "45vw" }}
+          onClick={() => automaticTest2()}
+        >
+          Auto-Teste Rápido
+        </Button>
+        {/* <Button
+          style={{ position: "absolute", top: "65vh", left: "45vw" }}
+          onClick={() => automaticTest3()}
+        >
+          Auto-Teste Rápido 2
+        </Button> */}
       </body>
     </div>
   );
